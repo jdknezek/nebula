@@ -29,6 +29,7 @@ func newTun(deviceName string, cidr *net.IPNet, defaultMTU int, routes []route, 
 
 	// NOTE: You cannot set the deviceName under Windows, so you must check tun.Device after calling .Activate()
 	return &Tun{
+		Device:       deviceName,
 		Cidr:         cidr,
 		MTU:          defaultMTU,
 		UnsafeRoutes: unsafeRoutes,
@@ -40,8 +41,9 @@ func (c *Tun) Activate() error {
 	c.Interface, err = water.New(water.Config{
 		DeviceType: water.TUN,
 		PlatformSpecificParams: water.PlatformSpecificParams{
-			ComponentID: "tap0901",
-			Network:     c.Cidr.String(),
+			ComponentID:   "tap0901",
+			InterfaceName: c.DeviceName(),
+			Network:       c.Cidr.String(),
 		},
 	})
 	if err != nil {
